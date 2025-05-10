@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'exam',
     'user_payment.apps.UserPaymentConfig',
     'teacher',
+    # 'pytest',
+    # 'coverage'
     
 ]
 

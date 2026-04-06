@@ -1,0 +1,10 @@
+{
+  "extends": "./node_modules/@tsconfig/node24/tsconfig.json",
+  "files": ["./vite.config.ts"],
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["node"]
+  }
+}

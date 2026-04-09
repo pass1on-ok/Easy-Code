@@ -69,10 +69,26 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  /** Refresh token if we have one; returns true if we have valid auth to fetch user */
+  function isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]))
+      // Refresh if token expires within the next 60 seconds
+      return payload.exp * 1000 < Date.now() + 60_000
+    } catch {
+      return true
+    }
+  }
+
+  /** Only refresh when the access token is missing or about to expire */
   async function ensureValidToken(): Promise<boolean> {
+    const access = localStorage.getItem('access_token')
     const refresh = localStorage.getItem('refresh_token')
-    if (!refresh) return !!localStorage.getItem('access_token')
+
+    if (!refresh) return !!access
+
+    // Access token still valid — no refresh needed
+    if (access && !isTokenExpired(access)) return true
+
     try {
       const data = await authService.refreshToken()
       if (data?.access) {

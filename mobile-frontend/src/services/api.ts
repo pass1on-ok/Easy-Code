@@ -21,26 +21,46 @@ api.interceptors.request.use(
   (e) => Promise.reject(e)
 )
 
+// Mutex: ensures only one token refresh runs at a time across concurrent 401s
+let refreshPromise: Promise<string | null> | null = null
+
 api.interceptors.response.use(
   (res) => res,
   async (err) => {
     const orig = err.config
     if (err.response?.status === 401 && !orig._retry) {
       orig._retry = true
-      try {
-        const refresh = localStorage.getItem('refresh_token')
-        const { data } = await api.post('/api/token/refresh/', { refresh })
-        localStorage.setItem('access_token', data.access)
-        if (data.refresh) localStorage.setItem('refresh_token', data.refresh)
-        orig.headers.Authorization = `Bearer ${data.access}`
-        return api(orig)
-      } catch {
-        localStorage.removeItem('access_token')
-        localStorage.removeItem('refresh_token')
-        const redirect = encodeURIComponent(window.location.pathname + window.location.search)
-        window.location.href = `/login?session_expired=1&redirect=${redirect}`
+      const refresh = localStorage.getItem('refresh_token')
+      if (!refresh) {
+        window.location.href = `/login?session_expired=1`
         return Promise.reject(err)
       }
+
+      // If a refresh is already in flight, wait for it instead of starting a new one
+      if (!refreshPromise) {
+        refreshPromise = api
+          .post('/api/token/refresh/', { refresh })
+          .then(({ data }) => {
+            localStorage.setItem('access_token', data.access)
+            if (data.refresh) localStorage.setItem('refresh_token', data.refresh)
+            return data.access as string
+          })
+          .catch(() => {
+            localStorage.removeItem('access_token')
+            localStorage.removeItem('refresh_token')
+            const redirect = encodeURIComponent(window.location.pathname + window.location.search)
+            window.location.href = `/login?session_expired=1&redirect=${redirect}`
+            return null
+          })
+          .finally(() => {
+            refreshPromise = null
+          })
+      }
+
+      const newToken = await refreshPromise
+      if (!newToken) return Promise.reject(err)
+      orig.headers.Authorization = `Bearer ${newToken}`
+      return api(orig)
     }
     return Promise.reject(err)
   }

@@ -41,8 +41,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/token/").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/signup/").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/token/refresh/").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/admin/**").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/courses/").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/course/**").permitAll()
+                .requestMatchers(HttpMethod.GET,  "/api/videos/**").permitAll()
                 .requestMatchers(HttpMethod.GET,  "/api/payment-config/").permitAll()
                 // Swagger UI
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()

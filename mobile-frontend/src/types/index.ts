@@ -46,3 +46,47 @@ export interface PurchasedCourse extends Course {
   completed?: boolean
   grade?: number | null
 }
+
+export interface QuizQuestion {
+  id: number
+  prompt: string
+  options: string[]
+}
+
+export interface Quiz {
+  video_id: number
+  video_title?: string | null
+  questions: QuizQuestion[]
+  attempted?: boolean
+  passed?: boolean
+}
+
+export interface QuizSubmitRequest {
+  answers: Record<number, number>
+}
+
+export interface QuestionResult {
+  question_id: number
+  prompt: string
+  options: string[]
+  user_answer: number | null
+  correct_answer: number
+  correct: boolean
+}
+
+export interface QuizResult {
+  video_id: number
+  score: number
+  total: number
+  passed: boolean
+  results: QuestionResult[]
+}
+
+export interface CourseProgress {
+  slug: string
+  total_lessons: number
+  completed_lessons: number
+  tests_total: number
+  tests_completed: number
+  tests_passed: number
+}

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { NavBar, Empty } from 'vant'
+import { NavBar, Empty, showToast } from 'vant'
 import { getCourses } from '@/services/courses'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from '@/i18n'
@@ -39,8 +39,7 @@ onMounted(async () => {
 })
 
 function openWebDashboard() {
-  const base = import.meta.env.DEV ? 'http://127.0.0.1:8000' : ''
-  window.open(`${base}/teacher/dashboard/`, '_blank')
+  showToast(t('teacher.createCourseWebOnly'))
 }
 
 function goDetail(slug: string) {
@@ -99,7 +98,6 @@ function goDetail(slug: string) {
             <span>⭐ 0</span>
             <span>☑ 0 {{ t('teacher.videosCount') }}</span>
           </div>
-          <button type="button" class="btn-edit" @click="goDetail(c.slug)">{{ t('teacher.viewCourse') }}</button>
         </div>
       </div>
       <p class="web-note">Курс құру және өңдеу веб-нұсқада қолжетімді.</p>
@@ -256,9 +254,14 @@ function goDetail(slug: string) {
   -webkit-tap-highlight-color: transparent;
 }
 .web-note {
-  font-size: 12px;
-  color: var(--edu-text-secondary);
-  margin-top: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--edu-text);
+  margin-top: 18px;
   text-align: center;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  padding: 12px 14px;
+  border-radius: 12px;
 }
 </style>

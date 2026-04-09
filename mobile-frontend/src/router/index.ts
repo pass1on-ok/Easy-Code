@@ -15,6 +15,7 @@ import TeacherView from '@/views/TeacherView.vue'
 import AboutView from '@/views/AboutView.vue'
 import AIChatView from '@/views/AIChatView.vue'
 import EditProfileView from '@/views/EditProfileView.vue'
+import QuizView from '@/views/QuizView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +48,12 @@ const router = createRouter({
       path: '/course/:slug',
       name: 'course-detail',
       component: CourseDetailView,
+    },
+    {
+      path: '/quiz/:videoId',
+      name: 'quiz',
+      component: QuizView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/checkout/:slug',
@@ -111,10 +118,14 @@ router.beforeEach((to) => {
   const requiresAuth = to.matched.some((r) => r.meta.requiresAuth)
   const requiresGuest = to.matched.some((r) => r.meta.requiresGuest)
 
-  if (requiresAuth && !authStore.isAuthenticated) {
+  // After a page refresh Pinia is empty but tokens are still in localStorage.
+  // Check both so the guard doesn't kick out a user who is actually logged in.
+  const authenticated = authStore.isAuthenticated || !!localStorage.getItem('access_token')
+
+  if (requiresAuth && !authenticated) {
     return { name: 'login', query: { redirect: to.fullPath } }
   }
-  if (requiresGuest && authStore.isAuthenticated) {
+  if (requiresGuest && authenticated) {
     return { name: 'home' }
   }
 })

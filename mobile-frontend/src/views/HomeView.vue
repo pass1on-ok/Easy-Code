@@ -113,34 +113,6 @@ function onImgError() {
         </div>
       </section>
 
-      <!-- 已登录：展示「我们的课程」= 已购课程，绿色卡片点击进入课程 -->
-      <section v-if="isLoggedIn" class="courses-section">
-        <h2 class="subsection-title">{{ t('home.myCourses') }}</h2>
-        <Loading v-if="myCoursesLoading" type="spinner" vertical>{{ t('home.loading') }}</Loading>
-        <Empty v-else-if="myCourses.length === 0" :description="t('home.noCoursesYet')" image-size="80" />
-        <div v-else class="course-list">
-          <button
-            v-for="c in myCourses"
-            :key="c.id"
-            type="button"
-            class="course-card course-card--active"
-            @click="goDetail(c.slug)"
-          >
-            <div class="course-card__thumb">
-              <img v-if="c.thumbnail" :src="c.thumbnail" alt="" class="thumb-img" />
-              <div v-else class="thumb-placeholder" />
-            </div>
-            <div class="course-card__body">
-              <span class="course-card__badge">{{ t('home.badgeActive') }}</span>
-              <h3 class="course-card__title">{{ c.name }}</h3>
-              <p class="course-card__desc">{{ (c.description || '').slice(0, 50) }}{{ (c.description && c.description.length > 50) ? '...' : '' }}</p>
-            </div>
-            <span class="course-card__arrow">→</span>
-          </button>
-        </div>
-        <button type="button" class="link-all" @click="goToCourses">{{ t('home.allCourses') }}</button>
-      </section>
-
       <!-- 热门课程 -->
       <section class="courses-section">
         <h2 class="subsection-title">{{ isLoggedIn ? t('home.otherCourses') : t('home.popularCourses') }}</h2>

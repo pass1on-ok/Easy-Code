@@ -15,6 +15,7 @@ const authStore = useAuthStore()
 const first_name = ref('')
 const last_name = ref('')
 const email = ref('')
+const bio = ref('')
 const loading = ref(false)
 
 onMounted(() => {
@@ -23,6 +24,7 @@ onMounted(() => {
     first_name.value = u.first_name || ''
     last_name.value = u.last_name || ''
     email.value = u.email || ''
+    bio.value = u.bio || ''
   }
 })
 
@@ -33,6 +35,7 @@ async function submit() {
       first_name: first_name.value.trim(),
       last_name: last_name.value.trim(),
       email: email.value.trim(),
+      bio: bio.value.trim() || undefined,
     })
     await authStore.fetchCurrentUser()
     showSuccessToast(t('edit.saveSuccess'))
@@ -76,6 +79,16 @@ async function submit() {
         type="email"
         :label="t('edit.email')"
         :placeholder="t('edit.emailPlaceholder')"
+      />
+      <Field
+        v-model="bio"
+        type="textarea"
+        :label="t('edit.bio')"
+        :placeholder="t('edit.bioPlaceholder')"
+        maxlength="500"
+        show-word-limit
+        rows="3"
+        autosize
       />
       <Button
         type="primary"

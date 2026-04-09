@@ -3,6 +3,7 @@ import { ref, nextTick, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLocaleStore } from '@/stores/locale'
 import { useI18n } from '@/i18n'
+import { getBotReply } from '@/services/chatbot'
 
 defineOptions({ name: 'AIChatView' })
 
@@ -44,9 +45,10 @@ function send() {
     chatListRef.value?.scrollTo({ top: chatListRef.value.scrollHeight, behavior: 'smooth' })
   })
   setTimeout(() => {
+    const lang = localeStore.current === 'kz' ? 'kz' : localeStore.current === 'py' ? 'py' : 'en'
     messages.value.push({
       role: 'ai',
-      text: t('ai.reply'),
+      text: getBotReply(text, lang),
       time: getTimeStr(),
     })
     nextTick(() => {

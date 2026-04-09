@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -47,6 +48,12 @@ public class SecurityConfig {
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 // Everything else requires authentication
                 .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex
+                // Return 401 (not 403) when a request is unauthenticated —
+                // the frontend's axios interceptor watches for 401 to trigger token refresh
+                .authenticationEntryPoint((request, response, authException) ->
+                        response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized"))
             )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

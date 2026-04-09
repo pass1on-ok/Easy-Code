@@ -54,7 +54,7 @@ export const authService = {
     return data
   },
 
-  async updateProfile(payload: { first_name?: string; last_name?: string; email?: string }) {
+  async updateProfile(payload: { first_name?: string; last_name?: string; email?: string; bio?: string; avatar?: string }) {
     const { data } = await api.patch('/user/api/me/', payload)
     return data
   },

@@ -5,9 +5,9 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: adau1123
+    url: jdbc:postgresql://ep-aged-poetry-alxzcrru.c-3.eu-central-1.aws.neon.tech:5432/neondb?sslmode=require
+    username: neondb_owner
+    password: npg_Cbpzvea8A1qn
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -44,7 +44,7 @@ payment:
 # App Config
 app:
   # 模拟支付成功后跳转回 H5（mobile-frontend 默认 5174）
-  frontend-url: http://127.0.0.1:5174
+  frontend-url: http://localhost:5174
   cors-allowed-origins:
     - http://localhost:5173
     - http://localhost:5174

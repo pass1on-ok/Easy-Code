@@ -17,11 +17,15 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     List<Course> findByIsPublishedTrue();
 
-    /** Eagerly fetch all associations to avoid N+1 on detail page. */
+    /**
+     * Fetch course with videos in one query.
+     * Materials and element collections (tags, prerequisites, learnings)
+     * are loaded lazily within the same @Transactional service call.
+     * Two simultaneous List JOIN FETCHes cause MultipleBagFetchException.
+     */
     @Query("""
             SELECT DISTINCT c FROM Course c
             LEFT JOIN FETCH c.videos
-            LEFT JOIN FETCH c.materials
             WHERE c.slug = :slug AND c.isPublished = true
             """)
     Optional<Course> findBySlugWithDetails(String slug);

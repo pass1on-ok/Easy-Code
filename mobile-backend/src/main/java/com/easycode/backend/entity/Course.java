@@ -60,19 +60,19 @@ public class Course {
     @Builder.Default
     private List<CourseMaterial> materials = new ArrayList<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "course_tags", joinColumns = @JoinColumn(name = "course_id"))
     @Column(name = "tag")
     @Builder.Default
     private List<String> tags = new ArrayList<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "course_prerequisites", joinColumns = @JoinColumn(name = "course_id"))
     @Column(name = "description")
     @Builder.Default
     private List<String> prerequisites = new ArrayList<>();
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "course_learnings", joinColumns = @JoinColumn(name = "course_id"))
     @Column(name = "description")
     @Builder.Default

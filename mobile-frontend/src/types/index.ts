@@ -5,6 +5,8 @@ export interface User {
   first_name?: string
   last_name?: string
   is_teacher?: boolean
+  bio?: string
+  avatar?: string
 }
 
 export interface Course {

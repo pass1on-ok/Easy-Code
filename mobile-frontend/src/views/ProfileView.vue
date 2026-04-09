@@ -78,6 +78,7 @@ function logout() {
         <div class="user-card__info">
           <div class="user-card__name">{{ displayName }}</div>
           <div v-if="authStore.user?.email" class="user-card__email">✉ {{ authStore.user.email }}</div>
+          <div v-if="authStore.user?.bio" class="user-card__bio">{{ authStore.user.bio }}</div>
         </div>
       </div>
       <!-- Stats -->
@@ -170,6 +171,12 @@ function logout() {
 .user-card__email {
   font-size: 13px;
   color: var(--edu-text-secondary);
+}
+.user-card__bio {
+  font-size: 13px;
+  color: var(--edu-text-secondary);
+  margin-top: 4px;
+  line-height: 1.4;
 }
 .stats-row {
   display: grid;

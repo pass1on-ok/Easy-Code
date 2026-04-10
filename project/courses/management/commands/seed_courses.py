@@ -12,7 +12,7 @@ COURSE_DATA = [
         'active': True,
         'thumbnail': 'files/thumbnail/python.png',
         'resource': 'files/resource/python.png',
-        'product_id': 'prod_python_beginners',
+        'product_id': 'price_1Q9pqmRtJj59SsmcdpFPW87j',
         'video_count': 7,
     },
     {
@@ -24,7 +24,7 @@ COURSE_DATA = [
         'active': True,
         'thumbnail': None,
         'resource': 'files/resource/cplusplus.png',
-        'product_id': 'prod_cplusplus_beginners',
+        'product_id': 'price_1QBBSFRtJj59Ssmc63UrBIBY',
         'video_count': 7,
     },
     {
@@ -36,7 +36,7 @@ COURSE_DATA = [
         'active': True,
         'thumbnail': 'files/thumbnail/JavaScript-logo.png',
         'resource': 'files/resource/javascript-logo.png',
-        'product_id': 'prod_javascript_beginners',
+        'product_id': 'price_1QBeLtRtJj59SsmcimeFFy6J',
         'video_count': 7,
     },
     {
@@ -48,7 +48,7 @@ COURSE_DATA = [
         'active': True,
         'thumbnail': 'files/thumbnail/react.png',
         'resource': 'files/resource/react.png',
-        'product_id': 'prod_react_framework',
+        'product_id': 'price_1QBf5sRtJj59SsmclADkKqnN',
         'video_count': 7,
     },
     {
@@ -60,7 +60,7 @@ COURSE_DATA = [
         'active': True,
         'thumbnail': 'files/thumbnail/vue.png',
         'resource': 'files/resource/vue.png',
-        'product_id': 'prod_vuejs_framework',
+        'product_id': 'price_1QBfY2RtJj59SsmcLbL0y6g6',
         'video_count': 7,
     },
     {
@@ -72,7 +72,7 @@ COURSE_DATA = [
         'active': True,
         'thumbnail': 'files/thumbnail/unity.png',
         'resource': 'files/resource/unity.png',
-        'product_id': 'prod_unity_game',
+        'product_id': 'price_1QBgWBRtJj59Ssmckp0mjDnB',
         'video_count': 7,
     },
 ]
@@ -104,11 +104,18 @@ class Command(BaseCommand):
 
             # Create videos
             for i in range(1, data['video_count'] + 1):
-                video, created_video = Video.objects.get_or_create(
+                is_preview = i == 1
+                video_url = 'https://www.youtube.com/embed/dQw4w9WgXcQ'
+                video_id = f'{data["slug"][:12]}_{i}'
+
+                video, created_video = Video.objects.update_or_create(
                     course=course,
                     serial_number=i,
                     defaults={
                         'title': f'Video {i}: Lecture {i}',
+                        'is_preview': is_preview,
+                        'video_url': video_url,
+                        'video_id': video_id,
                     }
                 )
                 if created_video:

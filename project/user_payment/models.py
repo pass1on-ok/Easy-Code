@@ -11,12 +11,8 @@ class UserPayment(models.Model):
     payment_bool = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'Payment info for {self.app_user.username} for course {self.course.title}'
+        return f'Payment info for {self.app_user.username} for course {self.course.name}'
 
-
-    def __str__(self):
-        return f'Payment info for {self.app_user.username} for course {self.course.title}'
-    
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -28,4 +24,4 @@ class Review(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.user.username} review on {self.course.title}'
+        return f'{self.user.username} review on {self.course.name}'

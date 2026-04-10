@@ -12,7 +12,22 @@ class VideoSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
-        fields = ['id', 'name', 'slug', 'description', 'price', 'discount', 'thumbnail', 'length']
+        fields = [
+            'id', 'name', 'slug', 'description', 'price', 'discount', 'thumbnail', 'length', 'active', 'product_id'
+        ]
+
+class CourseCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = [
+            'id', 'name', 'slug', 'description', 'price', 'discount', 'active',
+            'thumbnail', 'resource', 'length', 'product_id'
+        ]
+        extra_kwargs = {
+            'slug': {'required': False, 'allow_blank': True},
+            'thumbnail': {'required': False, 'allow_null': True},
+            'resource': {'required': False, 'allow_null': True}
+        }
 
 class CourseDetailSerializer(serializers.ModelSerializer):
     videos = VideoSerializer(source='video_set', many=True, read_only=True)
@@ -30,7 +45,3 @@ class CourseMaterialSerializer(serializers.ModelSerializer):
         model = CourseMaterial  # Предполагаем, что у вас есть такая модель для материалов
         fields = ['id', 'course', 'file', 'description']
 
-class CourseCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Course
-        fields = ['name', 'description', 'price']

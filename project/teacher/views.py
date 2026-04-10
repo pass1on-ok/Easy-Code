@@ -12,14 +12,18 @@ from rest_framework import viewsets
 from .serializers import TeacherSerializer
 from rest_framework.decorators import action
 from drf_yasg.utils import swagger_auto_schema
+from user_payment.models import UserPayment
 from drf_yasg import openapi
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 import logging
 from django.utils.text import slugify
+from django.db.models import Sum
+from user_profile.models import Profile
 
 logger = logging.getLogger(__name__)
 # class TeacherView(APIView):
@@ -96,6 +100,7 @@ def manage_courses(request):
     ))},
     operation_description="View all courses taught by the teacher"
 )
+@login_required
 @api_view(['GET'])
 def teacher_courses(request):
     teacher = Teacher.objects.get(user=request.user)
@@ -115,6 +120,7 @@ def teacher_courses(request):
     ))},
     operation_description="Get student stats for a course"
 )
+@login_required
 @api_view(['GET'])
 def course_students_stats(request, course_id):
     course = Course.objects.get(id=course_id) 
@@ -128,6 +134,7 @@ def course_students_stats(request, course_id):
     responses={200: openapi.Response('Student Added to Course')},
     operation_description="Add a student to a course"
 )
+@login_required
 @api_view(['GET','POST'])
 def add_student_to_course(request):
     teacher = Teacher.objects.get(user=request.user)
@@ -169,7 +176,6 @@ def remove_student_from_course(request, student_id, course_id):
     operation_description="Upload material to a course"
 )
 @api_view(['POST'])
-@login_required
 def upload_course_material(request, course_id):
     teacher = Teacher.objects.get(user=request.user) 
     course = Course.objects.get(id=course_id)  
@@ -185,6 +191,55 @@ def upload_course_material(request, course_id):
         form = CourseMaterialForm()
 
     return render(request, 'teacher/upload_course_material.html', {'form': form})
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def teacher_dashboard_api(request):
+    if not hasattr(request.user, 'profile') or request.user.profile.role != 'teacher':
+        return Response({'error': 'Only teachers can access this endpoint.'}, status=status.HTTP_403_FORBIDDEN)
+
+    teacher, created = Teacher.objects.get_or_create(user=request.user)
+    courses = teacher.courses.all()
+    students = UserCourse.objects.filter(course__in=courses).values('user').distinct().count()
+    revenue = UserPayment.objects.filter(course__in=courses, payment_bool=True).aggregate(total=Sum('course__price'))['total'] or 0
+
+    return Response({
+        'course_count': courses.count(),
+        'student_count': students,
+        'revenue': revenue,
+        'average_rating': 0,
+    }, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def teacher_courses_api(request):
+    if not hasattr(request.user, 'profile') or request.user.profile.role != 'teacher':
+        return Response({'error': 'Only teachers can access this endpoint.'}, status=status.HTTP_403_FORBIDDEN)
+
+    teacher, created = Teacher.objects.get_or_create(user=request.user)
+    courses = teacher.courses.all()
+    serializer = CourseSerializer(courses, many=True, context={'request': request})
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_teacher_course_api(request):
+    if not hasattr(request.user, 'profile') or request.user.profile.role != 'teacher':
+        return Response({'error': 'Only teachers can create courses.'}, status=status.HTTP_403_FORBIDDEN)
+
+    teacher, created = Teacher.objects.get_or_create(user=request.user)
+    serializer = CourseCreateSerializer(data=request.data)
+    if serializer.is_valid():
+        course = serializer.save()
+        if not course.slug:
+            course.slug = slugify(course.name)
+            course.save()
+        teacher.courses.add(course)
+        return Response(CourseSerializer(course, context={'request': request}).data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CustomLoginView(LoginView):
@@ -205,36 +260,24 @@ class CustomLoginView(LoginView):
     operation_description="Create a new course"
 )
 @api_view(['GET','POST'])
-
-# def create_course(request):
-#     if request.method == 'POST':
-#         form = CourseForm(request.POST)
-#         if form.is_valid():
-#             course = form.save(commit=False)
-#             course.teacher = request.user  
-#             course.save()
-#             return redirect('course_list')
-#     else:
-#         form = CourseForm()
-#     return render(request, 'teacher/create_course.html', {'form': form})
-
 def create_course(request):
+    teacher, _ = Teacher.objects.get_or_create(user=request.user)
+
     if request.method == 'POST':
         form = CourseForm(request.POST, request.FILES)
         if form.is_valid():
-            try:
-                course = form.save(commit=False)
-                course.teacher = request.user
-                if not course.slug:
-                    course.slug = slugify(course.name)
-                course.save()
-                logger.info(f"Course created: {course.name}")
-                return redirect(' ')
-            except Exception as e:
-                logger.error(f"Error creating course: {e}")
+            course = form.save(commit=False)
+            if not course.slug:
+                course.slug = slugify(course.name)
+            course.save()
+            teacher.courses.add(course)
+            logger.info(f"Course created: {course.name}")
+            return redirect('teacher_courses')
         else:
             logger.warning(f"Form is invalid: {form.errors}")
-    form = CourseForm()
+    else:
+        form = CourseForm()
+
     return render(request, 'teacher/create_course.html', {'form': form})
 # def create_course(request):
 #     if request.method == 'POST':

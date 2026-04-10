@@ -101,6 +101,17 @@
                     {{ t('course.buy') }}
                   </RouterLink>
                 </div>
+                <div v-else-if="!course.has_access && course.videos.length === 0" class="no-access-warning">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 5a1 1 0 0 1 1 1v4h3a1 1 0 1 1 0 2h-4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="2" fill="none"/>
+                  </svg>
+                  <p>
+                    No preview videos are available yet. Purchase the course to unlock all lessons.
+                  </p>
+                  <RouterLink :to="`/checkout/${course.slug}`" class="btn btn-small btn-primary">
+                    {{ t('course.buy') }}
+                  </RouterLink>
+                </div>
                 
                 <div v-if="selectedVideo" class="video-player-container">
                   <div class="video-player">

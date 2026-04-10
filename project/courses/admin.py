@@ -15,6 +15,11 @@ class VideoAdmin(admin.TabularInline):
 
 class CourseAdmin(admin.ModelAdmin):
     inlines = [TagAdmin, LearningAdmin, PrerequesiteAdmin, VideoAdmin]
+    list_display = ('name', 'price', 'active', 'teacher_names')
+
+    def teacher_names(self, obj):
+        return ', '.join([teacher.user.username for teacher in obj.teachers.all()])
+    teacher_names.short_description = 'Teachers'
 
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Video)

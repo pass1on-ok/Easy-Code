@@ -1,0 +1,100 @@
+:root[data-theme="light"] {
+  /* Primary Colors */
+  --color-primary: #667eea;
+  --color-primary-dark: #5568d3;
+  --color-secondary: #764ba2;
+  
+  /* Background Colors */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f7fafc;
+  --color-bg-tertiary: #edf2f7;
+  
+  /* Text Colors */
+  --color-text-primary: #1a202c;
+  --color-text-secondary: #4a5568;
+  --color-text-tertiary: #718096;
+  
+  /* Border Colors */
+  --color-border: #e2e8f0;
+  --color-border-hover: #cbd5e0;
+  
+  /* Card Colors */
+  --color-card-bg: #ffffff;
+  --color-card-shadow: rgba(0, 0, 0, 0.08);
+  --color-card-shadow-hover: rgba(0, 0, 0, 0.12);
+  
+  /* Input Colors */
+  --color-input-bg: #ffffff;
+  --color-input-border: #e2e8f0;
+  --color-input-focus: #667eea;
+  
+  /* Hero Gradient */
+  --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-hero-overlay: linear-gradient(135deg, rgba(102, 126, 234, 0.9) 0%, rgba(118, 75, 162, 0.9) 100%);
+  --gradient-card: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  
+  /* Navbar Gradient */
+  --gradient-navbar: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --color-navbar-shadow: rgba(0, 0, 0, 0.15);
+  
+  /* Status Colors */
+  --color-success: #48bb78;
+  --color-error: #f56565;
+  --color-warning: #ed8936;
+  --color-info: #4299e1;
+}
+
+:root[data-theme="dark"] {
+  /* Primary Colors */
+  --color-primary: #7c8ee8;
+  --color-primary-dark: #6875d8;
+  --color-secondary: #9d6bc4;
+  
+  /* Background Colors */
+  --color-bg-primary: #1a202c;
+  --color-bg-secondary: #2d3748;
+  --color-bg-tertiary: #4a5568;
+  
+  /* Text Colors */
+  --color-text-primary: #f7fafc;
+  --color-text-secondary: #e2e8f0;
+  --color-text-tertiary: #cbd5e0;
+  
+  /* Border Colors */
+  --color-border: #4a5568;
+  --color-border-hover: #718096;
+  
+  /* Card Colors */
+  --color-card-bg: #2d3748;
+  --color-card-shadow: rgba(0, 0, 0, 0.3);
+  --color-card-shadow-hover: rgba(0, 0, 0, 0.4);
+  
+  /* Input Colors */
+  --color-input-bg: #2d3748;
+  --color-input-border: #4a5568;
+  --color-input-focus: #7c8ee8;
+  
+  /* Hero Gradient */
+  --gradient-hero: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  --gradient-hero-overlay: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(51, 65, 85, 0.95) 100%);
+  --gradient-card: linear-gradient(135deg, rgba(124, 142, 232, 0.15) 0%, rgba(157, 107, 196, 0.15) 100%);
+  
+  /* Navbar Gradient - Much darker for dark theme */
+  --gradient-navbar: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  --color-navbar-shadow: rgba(0, 0, 0, 0.4);
+  
+  /* Status Colors */
+  --color-success: #68d391;
+  --color-error: #fc8181;
+  --color-warning: #f6ad55;
+  --color-info: #63b3ed;
+}
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}

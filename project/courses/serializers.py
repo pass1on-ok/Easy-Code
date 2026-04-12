@@ -5,9 +5,19 @@ from django.contrib.auth.models import User  # Импорт модели User, �
 from .models import Course, CourseMaterial
 
 class CourseSerializer(serializers.ModelSerializer):
+    thumbnail = serializers.SerializerMethodField()
+    
     class Meta:
         model = Course
-        fields = ['id', 'name', 'description', 'price']
+        fields = ['id', 'name', 'slug', 'description', 'price', 'discount', 'thumbnail', 'length']
+    
+    def get_thumbnail(self, obj):
+        if obj.thumbnail:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.thumbnail.url)
+            return obj.thumbnail.url
+        return None
 
 class AddStudentSerializer(serializers.Serializer):
     student = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())

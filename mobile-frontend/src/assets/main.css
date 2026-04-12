@@ -1,0 +1,77 @@
+/* Easy Code – 简约淡紫色主题 (minimal soft purple) */
+:root {
+  --edu-bg: #f8fafc;
+  --edu-bg-card: #ffffff;
+  --edu-primary: #8f83f3;
+  --edu-primary-soft: #f1efff;
+  --edu-primary-dark: #6356d9;
+  --edu-text: #0f172a;
+  --edu-text-secondary: #64748b;
+  --edu-border: #e2e8f0;
+  --edu-radius: 14px;
+  --edu-radius-sm: 10px;
+  --edu-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --edu-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --header-from: #8f83f3;
+  --header-to: #6b5fd9;
+  --header-text: #ffffff;
+}
+.theme-dark {
+  --edu-bg: #0f172a;
+  --edu-bg-card: #1e293b;
+  --edu-primary: #a5b4fc;
+  --edu-primary-soft: #312e81;
+  --edu-text: #f1f5f9;
+  --edu-text-secondary: #94a3b8;
+  --edu-border: #334155;
+  --edu-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --header-from: #4f46e5;
+  --header-to: #312e81;
+  --header-text: #f1f5f9;
+}
+.theme-dark .theme-dark-bg-card {
+  background: var(--edu-bg-card);
+}
+.theme-dark .theme-dark-text {
+  color: var(--edu-text);
+}
+.theme-dark .theme-dark-text-secondary {
+  color: var(--edu-text-secondary);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--edu-bg);
+  font-family: var(--edu-font);
+  color: var(--edu-text);
+}
+
+#app {
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Vant 主题 – 淡紫 */
+:root {
+  --van-primary-color: #8f83f3;
+  --van-nav-bar-title-text-color: #0f172a;
+  --van-cell-text-color: #0f172a;
+  --van-cell-value-color: #64748b;
+}
+.theme-dark {
+  --van-nav-bar-title-text-color: #f1f5f9;
+  --van-cell-text-color: #f1f5f9;
+  --van-cell-value-color: #94a3b8;
+}

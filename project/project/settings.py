@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
+    'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -96,14 +98,15 @@ DATABASES = {
 }
 
 # Настройки для SimpleJWT
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework_simplejwt.authentication.JWTAuthentication',
-#     ],
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#     ],
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+}
 
 
 # Password validation
@@ -161,5 +164,27 @@ STRIPE_PUBLIC_KEY_TEST='pk_test_51Q9oeERtJj59Ssmcft8TbRebrFIRhe8djPEGswMwKGM5Vvk
 STRIPE_SECRET_KEY_TEST='sk_test_51Q9oeERtJj59SsmcnvxZlmIooUKmHRgRc7IVwB7PnLkAt3ZVttnAyIfUSnkRzK0E1DRKhKUELBkARbgQxIqX4xkd00KUx1AcR7'
 STRIPE_WEBHOOK_SECRET_TEST='STRIPE_WEBHOOK_SECRET_TEST'
 # PRODUCT_PRICE= 'price_1Q9pqmRtJj59SsmcdpFPW87j'
-REDIRECT_DOMAIN = 'http://127.0.0.1:8000'
+REDIRECT_DOMAIN = 'http://localhost:5173'
+
+# CORS Settings
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:5174',
+    'http://127.0.0.1:5174',
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
 #LOGIN_REDIRECT_URL = '/'

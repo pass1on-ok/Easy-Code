@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import views_api
 
 urlpatterns = [
     path('product_page/<slug>/', views.product_page, name='product_page'),
@@ -11,4 +12,9 @@ urlpatterns = [
     path('review/update/<slug:course_slug>/', views.update_review, name='update_review'),
     path('review/delete/<slug:course_slug>/<int:review_id>/', views.delete_review, name='delete_review'),
     path('review/list/<slug:course_slug>/', views.review_list, name='list_reviews'),
+    
+    # API endpoints
+    path('api/create-checkout/<slug:slug>/', views_api.create_checkout_session, name='api_create_checkout'),
+    path('api/confirm-payment/', views_api.confirm_payment, name='api_confirm_payment'),
+    path('api/stripe-key/', views_api.get_stripe_public_key, name='api_stripe_key'),
 ]

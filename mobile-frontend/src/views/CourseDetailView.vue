@@ -137,6 +137,35 @@ function formatDate(d: Date) {
   return `${yyyy}-${mm}-${dd}`
 }
 
+/** Filled triangle (PDF coords, y from top). */
+function fillTriangle(
+  doc: jsPDF,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  x3: number,
+  y3: number,
+  r: number,
+  g: number,
+  b: number,
+) {
+  doc.setFillColor(r, g, b)
+  doc.setDrawColor(r, g, b)
+  doc.lines(
+    [
+      [x2 - x1, y2 - y1],
+      [x3 - x2, y3 - y2],
+      [x1 - x3, y1 - y3],
+    ],
+    x1,
+    y1,
+    [1, 1],
+    'F',
+    true,
+  )
+}
+
 function randomCertId() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
   let out = 'EC-'
@@ -207,62 +236,90 @@ async function onFinishCourse() {
 
     const pageWidth = doc.internal.pageSize.getWidth()
     const pageHeight = doc.internal.pageSize.getHeight()
+    const cx = pageWidth / 2
 
-    // Background frame
-    doc.setDrawColor(22, 163, 74)
-    doc.setLineWidth(3)
-    doc.roundedRect(26, 26, pageWidth - 52, pageHeight - 52, 14, 14)
-    doc.setDrawColor(187, 247, 208)
-    doc.setLineWidth(1)
-    doc.roundedRect(42, 42, pageWidth - 84, pageHeight - 84, 12, 12)
+    // Reference-style layout: white field, light-blue outer frame, black inner frame, corner triangles
+    const blueBorder: [number, number, number] = [107, 185, 240]
+    const navy: [number, number, number] = [30, 42, 90]
+    const skyTri: [number, number, number] = [162, 210, 245]
 
-    // Brand
-    doc.setTextColor(22, 163, 74)
-    doc.setFontSize(16)
-    doc.text('Easy Code', 60, 85)
+    doc.setDrawColor(...blueBorder)
+    doc.setLineWidth(9)
+    doc.rect(16, 16, pageWidth - 32, pageHeight - 32, 'S')
 
-    // Title
-    doc.setTextColor(17, 24, 39)
-    doc.setFontSize(34)
-    doc.text(t('detail.certificateTitle'), pageWidth / 2, 125, { align: 'center' })
-    doc.setTextColor(75, 85, 99)
+    doc.setDrawColor(0, 0, 0)
+    doc.setLineWidth(1.25)
+    doc.rect(30, 30, pageWidth - 60, pageHeight - 60, 'S')
+
+    fillTriangle(doc, 30, 30, 30, 138, 148, 30, ...skyTri)
+    fillTriangle(doc, 30, 30, 30, 92, 96, 30, ...navy)
+    fillTriangle(doc, pageWidth - 30, pageHeight - 30, pageWidth - 30, pageHeight - 138, pageWidth - 148, pageHeight - 30, ...skyTri)
+    fillTriangle(doc, pageWidth - 30, pageHeight - 30, pageWidth - 30, pageHeight - 92, pageWidth - 96, pageHeight - 30, ...navy)
+
+    // Logo block (brand English like reference; all certificate copy still from t() — Kazakh unchanged in kk locale)
+    const logoTop = 52
+    doc.setFillColor(239, 246, 255)
+    doc.setDrawColor(37, 99, 235)
+    doc.setLineWidth(2)
+    doc.roundedRect(cx - 34, logoTop, 68, 46, 5, 5, 'FD')
+    doc.setTextColor(37, 99, 235)
     doc.setFontSize(13)
-    doc.text(t('detail.certificateSubtitle'), pageWidth / 2, 155, { align: 'center' })
+    doc.text('</>', cx, logoTop + 30, { align: 'center' })
 
-    // Recipient name
-    doc.setTextColor(17, 24, 39)
-    doc.setFontSize(28)
-    doc.text(displayName, pageWidth / 2, 230, { align: 'center' })
-    doc.setDrawColor(209, 213, 219)
-    doc.setLineWidth(1)
-    doc.line(pageWidth / 2 - 220, 245, pageWidth / 2 + 220, 245)
-
-    // Course name highlight
-    doc.setTextColor(22, 163, 74)
+    doc.setTextColor(0, 0, 0)
     doc.setFontSize(18)
-    doc.text(courseName, pageWidth / 2, 290, { align: 'center' })
+    doc.text('Easy Code', cx, logoTop + 64, { align: 'center' })
+    doc.setTextColor(80, 80, 80)
+    doc.setFontSize(10)
+    const taglineBaseline = logoTop + 82
+    doc.text('Programming Courses', cx, taglineBaseline, { align: 'center' })
 
-    // Body text
+    // 10pt tagline → 36pt title needs extra gap (cap height + descenders);28pt was too tight and overlapped
+    let y = taglineBaseline + 42
+    doc.setTextColor(0, 0, 0)
+    doc.setFontSize(36)
+    doc.text(t('detail.certificateTitle'), cx, y, { align: 'center' })
+    y += 34
+    doc.setFontSize(15)
+    const subLines = doc.splitTextToSize(t('detail.certificateSubtitle'), 640)
+    doc.text(subLines, cx, y, { align: 'center' })
+    y += Math.max(22, subLines.length * 18) + 18
+
+    doc.setFontSize(26)
+    doc.text(displayName, cx, y, { align: 'center' })
+    y += 16
+    doc.setDrawColor(0, 0, 0)
+    doc.setLineWidth(0.8)
+    doc.line(cx - 240, y, cx + 240, y)
+    y += 32
+
+    doc.setFontSize(17)
+    doc.text(courseName, cx, y, { align: 'center' })
+    y += 26
     doc.setTextColor(55, 65, 81)
-    doc.setFontSize(14)
-    const bodyLines = doc.splitTextToSize(t('detail.certificateBody', { course: courseName }), 560)
-    doc.text(bodyLines, pageWidth / 2, 330, { align: 'center' })
+    doc.setFontSize(13)
+    const bodyLines = doc.splitTextToSize(t('detail.certificateBody', { course: courseName }), 620)
+    doc.text(bodyLines, cx, y, { align: 'center' })
+    y += bodyLines.length * 15 + 20
 
-    // Footer: date + certificate id
-    doc.setTextColor(75, 85, 99)
-    doc.setFontSize(12)
-    doc.text(`${t('detail.certificateDate')}: ${formatDate(now)}`, 60, pageHeight - 70)
-    doc.text(`ID: ${certId}`, pageWidth - 60, pageHeight - 70, { align: 'right' })
+    doc.setTextColor(100, 116, 139)
+    doc.setFontSize(10)
+    doc.text(`ID: ${certId}`, cx, y, { align: 'center' })
 
-    // Signature placeholders
-    doc.setDrawColor(156, 163, 175)
-    doc.setLineWidth(1)
-    doc.line(120, pageHeight - 120, 320, pageHeight - 120)
-    doc.line(pageWidth - 320, pageHeight - 120, pageWidth - 120, pageHeight - 120)
-    doc.setTextColor(107, 114, 128)
+    const footY = pageHeight - 56
+    const lineY = pageHeight - 42
+    doc.setTextColor(0, 0, 0)
     doc.setFontSize(11)
-    doc.text(t('detail.certificateSignTeacher'), 220, pageHeight - 98, { align: 'center' })
-    doc.text(t('detail.certificateSignPlatform'), pageWidth - 220, pageHeight - 98, { align: 'center' })
+    doc.text(`${t('detail.certificateDate')}: ${formatDate(now)}`, 72, footY - 8)
+    doc.setDrawColor(0, 0, 0)
+    doc.setLineWidth(0.75)
+    doc.line(52, lineY, 252, lineY)
+
+    doc.setFontSize(11)
+    doc.text('EASY CODE', pageWidth - 72, footY - 22, { align: 'right' })
+    doc.setFontSize(10)
+    doc.text(t('detail.certificateSignPlatform'), pageWidth - 72, footY - 8, { align: 'right' })
+    doc.line(pageWidth - 252, lineY, pageWidth - 52, lineY)
 
     const blob = doc.output('blob')
     const filename = `${safeFilename(courseName)}-certificate-${formatDate(now)}.pdf`

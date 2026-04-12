@@ -6,10 +6,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(
-        name = "quiz_attempts",
-        uniqueConstraints = @UniqueConstraint(name = "uq_quiz_attempt_user_video", columnNames = {"user_id", "video_id"})
-)
+@Table(name = "quiz_attempts_v2")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class QuizAttempt {
 
@@ -18,20 +15,26 @@ public class QuizAttempt {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    // NOTE: nullable=true to tolerate legacy/null rows during schema update in dev DB.
+    // Data cleanup/migration can tighten this later.
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "video_id", nullable = false)
+    // NOTE: nullable=true to tolerate legacy/null rows during schema update in dev DB.
+    @JoinColumn(name = "video_id", nullable = true)
     private Video video;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer score = 0;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer total = 0;
 
     @Column(nullable = false)
+    @Builder.Default
     private boolean passed = false;
 
     @Column(name = "submitted_at", nullable = false)
